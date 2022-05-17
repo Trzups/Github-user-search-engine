@@ -1,12 +1,24 @@
 <template>
-  <div class="home"></div>
+  <div class="home">
+    <div>
+      <h1>GtHub user search</h1>
+    </div>
+    <SearchUser @user="getUserRepo" />
+  </div>
 </template>
 
 <script>
-// @ is an alias to /src
-
+import SearchUser from "@/components/SearchUser.vue";
 export default {
   name: "Home",
-  components: {},
+  components: { SearchUser },
+  data() {
+    return {};
+  },
+  methods: {
+    getUserRepo(user) {
+      console.log(user);
+    },
+  },
 };
 </script>
