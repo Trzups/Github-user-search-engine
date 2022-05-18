@@ -64,17 +64,19 @@ export default {
   },
   methods: {
     getUserRepo(user) {
+      let loader = this.$loading.show();
       let reposUser = `https://api.github.com/users/${user.login}/repos`;
       axios
         .get(reposUser)
         .then((response) => {
+          setTimeout(() => {
+            loader.hide();
+          }, 2000);
           this.repoUser = response.data;
-          this.query = "";
           this.showTable = true;
           this.errorMessage = "";
         })
         .catch((error) => {
-          this.query = "";
           this.showTable = false;
           this.errorMessage = " Error repositories does not exist";
           console.log(error);

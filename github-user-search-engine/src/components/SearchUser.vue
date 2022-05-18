@@ -63,9 +63,11 @@ export default {
       if (this.$refs.search.input == 0) {
         return (this.errorMessage = "Enter the user");
       }
+
       this.$emit("user", this.data.selectUser);
       this.$refs.search.input = "";
       this.data.selectUser = null;
+      this.results = [];
     },
     selectItem(item) {
       this.data.selectUser = item;
