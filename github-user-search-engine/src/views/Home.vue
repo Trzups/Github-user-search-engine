@@ -24,14 +24,12 @@
       <table class="table">
         <thead>
           <tr>
-            <th scope="col">#</th>
             <th scope="col">Name repository</th>
             <th scope="col">Stars</th>
           </tr>
         </thead>
-        <tbody v-for="(item, index) in repoUser" :key="item">
+        <tbody v-for="item in paginatedItems" :key="item">
           <tr>
-            <td scope="row">{{ index + 1 }}</td>
             <td>
               <strong>{{ item.name }}</strong>
             </td>
@@ -41,10 +39,20 @@
           </tr>
         </tbody>
       </table>
+      <div class="overflow-auto">
+        <b-pagination
+          v-model="currentPage"
+          class="d-flex justify-content-center"
+          :total-rows="rows"
+          :per-page="perPage"
+          aria-controls="my-table"
+        ></b-pagination>
+        <p class="mt-3">Current Page: {{ currentPage }}</p>
+      </div>
     </div>
   </div>
   <div v-if="errorMessage">
-    <strong>{{ errorMessage }}</strong>
+    <strong class="alert alert-danger">{{ errorMessage }}</strong>
   </div>
 </template>
 
@@ -60,10 +68,29 @@ export default {
       repoUser: [],
       showTable: false,
       errorMessage: "",
+      perPage: 10,
+      currentPage: 1,
+      startPage: 0,
     };
+  },
+  computed: {
+    rows() {
+      return this.repoUser.length;
+    },
+    paginatedItems() {
+      if (this.currentPage == 1) {
+        return this.repoUser.slice(this.startPage, this.perPage);
+      } else {
+        return this.repoUser.slice(
+          (this.currentPage - 1) * this.perPage,
+          this.currentPage * this.perPage
+        );
+      }
+    },
   },
   methods: {
     getUserRepo(user) {
+      this.currentPage = 1;
       let loader = this.$loading.show();
       let reposUser = `https://api.github.com/users/${user.login}/repos`;
       axios
