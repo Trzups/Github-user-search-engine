@@ -10,7 +10,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue-3/dist/bootstrap-vue-3.css";
 
 const accessToken = process.env.VUE_APP_API_GITHUB_KEY;
-axios.defaults.headers.common["Authorization"] = `Bearer: ${accessToken}`;
+axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
 
 createApp(App)
   .use(store)

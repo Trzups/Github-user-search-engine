@@ -56,6 +56,7 @@ export default {
       },
       results: [],
       errorMessage: "",
+      debounce: null,
     };
   },
   methods: {
@@ -63,9 +64,7 @@ export default {
       if (this.$refs.search.input == 0) {
         return (this.errorMessage = "Enter the user");
       }
-
-      this.$emit("user", this.data.selectUser);
-      this.$refs.search.input = "";
+      this.$emit("user", this.$refs.search.input);
       this.data.selectUser = null;
       this.results = [];
     },
@@ -76,16 +75,19 @@ export default {
     },
     onInput(event) {
       this.errorMessage = "";
-      this.data.input = event.input;
-      let userGit = `https://api.github.com/search/users?q=${this.data.input}in:user&per_page=100`;
-      axios
-        .get(userGit)
-        .then((response) => {
-          this.results = response.data.items;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      clearTimeout(this.debounce);
+      this.debounce = setTimeout(() => {
+        this.data.input = event.input;
+        let userGit = `https://api.github.com/search/users?q=${this.data.input}in:user&per_page=100`;
+        axios
+          .get(userGit)
+          .then((response) => {
+            this.results = response.data.items;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }, 500);
     },
   },
 };
