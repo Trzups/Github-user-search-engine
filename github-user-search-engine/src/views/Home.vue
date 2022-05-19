@@ -18,45 +18,44 @@
           </div>
         </div>
       </div>
-
-      <div>
-        <table class="table">
+      <div class="repo">
+        <table class="table table-hover" style="width: 100%">
           <thead>
             <tr>
-              <th scope="col">Repository</th>
-              <th scope="col">Total commits</th>
-              <th scope="col">Open Pull Requests</th>
-              <th scope="col">Stars</th>
-              <th scope="col">Watching</th>
-              <th scope="col">Forks</th>
-              <th scope="col">Link to repository</th>
+              <th class="col-md-2">Repository</th>
+              <th class="col">Total commits</th>
+              <th class="col">Open Pull Requests</th>
+              <th class="col">Stars</th>
+              <th class="col">Watching</th>
+              <th class="col">Forks</th>
+              <th class="col">Link to repository</th>
             </tr>
           </thead>
           <tbody v-for="item in paginatedItems" :key="item">
             <tr>
-              <td>
+              <td scope="row">
                 <strong>{{ item.name }}</strong>
               </td>
-              <td>
+              <td scope="row">
                 <p v-if="item.object != null">
                   {{ item.object.history.totalCount }}
                 </p>
                 <p v-else>-</p>
               </td>
-              <td>
+              <td scope="row">
                 {{ item.pullRequests.totalCount }}
               </td>
-              <td>
+              <td scope="row">
                 {{ item.stargazerCount }}
               </td>
-              <td>
+              <td scope="row">
                 {{ item.watchers.totalCount }}
               </td>
-              <td>
+              <td scope="row">
                 {{ item.forks.totalCount }}
               </td>
-              <td>
-                <a :href="item.url">Link to Repo</a>
+              <td scope="row">
+                <a :href="item.url">Link</a>
               </td>
             </tr>
           </tbody>
@@ -152,9 +151,6 @@ export default {
           },
         })
         .then((response) => {
-          setTimeout(() => {
-            loader.hide();
-          }, 2000);
           if (response.data.data.user != null) {
             this.repoUser = response.data.data.user.repositories.nodes;
             this.avatarUser = response.data.data.user.avatarUrl;
@@ -163,15 +159,17 @@ export default {
             this.errorMessage = "";
           } else {
             this.showTable = false;
-            console.log(response.data);
             this.errorMessage = `${response.data.errors[0].message}`;
           }
         })
         .catch((error) => {
+          console.error(error);
+        })
+        .finally(() => {
+          const delay = 500;
           setTimeout(() => {
             loader.hide();
-          }, 2000);
-          console.log(error);
+          }, delay);
         });
     },
   },
@@ -197,5 +195,14 @@ export default {
 .avatar {
   width: 200px;
   height: 200px;
+}
+.repo {
+  width: 100%;
+  height: 300px;
+  margin: 0;
+  padding: 0;
+  background-color: #fff;
+  position: absolute;
+  top: 50%;
 }
 </style>

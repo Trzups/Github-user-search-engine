@@ -84,8 +84,8 @@ export default {
           .then((response) => {
             this.results = response.data.items;
           })
-          .catch((error) => {
-            console.log(error);
+          .catch(() => {
+            console.error("Invalid token");
           });
       }, 500);
     },
