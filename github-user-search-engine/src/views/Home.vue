@@ -1,74 +1,48 @@
 <template>
-  <div class="home">
-    <div>
-      <div>
-        <h1>GtHub user search</h1>
-      </div>
-      <SearchUser @user="getUserRepo" />
-    </div>
-    <br />
-    <div v-if="showTable">
-      <div class="row">
-        <div class="d-flex justify-content-center">
-          <div>
-            <h3>{{ loginUser }}</h3>
-            <figure class="image mb-6">
-              <img class="avatar" v-bind:src="avatarUser" />
-            </figure>
-          </div>
+  <div>
+    <div id="main">
+      <div class="title-search">
+        <div class="title">
+          <h1>GtHub user search</h1>
+        </div>
+        <div class="search">
+          <SearchUser @user="getUserRepo" />
         </div>
       </div>
-      <div class="repo">
-        <table class="table table-hover" style="width: 100%">
-          <thead>
-            <tr>
-              <th class="col-md-2">Repository</th>
-              <th class="col">Total commits</th>
-              <th class="col">Open Pull Requests</th>
-              <th class="col">Stars</th>
-              <th class="col">Watching</th>
-              <th class="col">Forks</th>
-              <th class="col">Link to repository</th>
-            </tr>
-          </thead>
-          <tbody v-for="item in paginatedItems" :key="item">
-            <tr>
-              <td scope="row">
-                <strong>{{ item.name }}</strong>
-              </td>
-              <td scope="row">
-                <p v-if="item.object != null">
-                  {{ item.object.history.totalCount }}
-                </p>
-                <p v-else>-</p>
-              </td>
-              <td scope="row">
-                {{ item.pullRequests.totalCount }}
-              </td>
-              <td scope="row">
-                {{ item.stargazerCount }}
-              </td>
-              <td scope="row">
-                {{ item.watchers.totalCount }}
-              </td>
-              <td scope="row">
-                {{ item.forks.totalCount }}
-              </td>
-              <td scope="row">
-                <a :href="item.url">Link</a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="overflow-auto">
-          <b-pagination
-            v-model="currentPage"
-            class="d-flex justify-content-center"
-            :total-rows="rows"
-            :per-page="perPage"
-            aria-controls="my-table"
-          ></b-pagination>
-          <p class="mt-3">Current Page: {{ currentPage }}</p>
+      <div v-if="showTable">
+        <div class="card">
+          <div class="main-card">
+            <div>
+              <img class="avatar" v-bind:src="avatarUser" />
+            </div>
+            <div class="user-info">
+              <h2>{{ loginUser }}</h2>
+              <p v-if="bioUser == null"></p>
+              <p v-else>{{ bioUser }}</p>
+              <ul class="info">
+                <li>{{ followingUser }} <strong>Following</strong></li>
+                <li>{{ followersUser }} <strong>Followers</strong></li>
+                <li>{{ repoUser.length }} <strong>Repos</strong></li>
+              </ul>
+            </div>
+          </div>
+          <h1>Repositories</h1>
+          <div id="repos">
+            <ul v-for="item in paginatedItems" :key="item">
+              <li>
+                <strong></strong><a :href="item.url">{{ item.name }}</a>
+              </li>
+            </ul>
+          </div>
+          <div class="overflow-auto">
+            <b-pagination
+              v-model="currentPage"
+              class="d-flex justify-content-center"
+              :total-rows="rows"
+              :per-page="perPage"
+              aria-controls="my-table"></b-pagination>
+            <p class="page-number">Current Page: {{ currentPage }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -87,9 +61,13 @@ export default {
   components: { SearchUser },
   data() {
     return {
+      infoUser: {
+        loginUser: "",
+        avatarUser: "",
+        bioUser: "",
+        followingUser: 0,
+      },
       repoUser: [],
-      avatarUser: "",
-      loginUser: "",
       showTable: false,
       errorMessage: "",
       perPage: 10,
@@ -107,7 +85,7 @@ export default {
       this.currentPage = 1;
       let loader = this.$loading.show();
       const query = `
-    query BIO_QUERY($username: String!){
+      query BIO_QUERY($username: String!) {
   user(login: $username) {
     repositories(first: 100) {
       totalCount
@@ -128,7 +106,7 @@ export default {
         forks {
           totalCount
         }
-        pullRequests (states: OPEN) {
+        pullRequests(states: OPEN) {
           totalCount
         }
       }
@@ -139,6 +117,13 @@ export default {
     }
     avatarUrl
     login
+    bio
+    following {
+      totalCount
+    }
+    followers {
+      totalCount
+    }
   }
 }
           `;
@@ -153,8 +138,12 @@ export default {
         .then((response) => {
           if (response.data.data.user != null) {
             this.repoUser = response.data.data.user.repositories.nodes;
+            console.log(response.data.data.user);
             this.avatarUser = response.data.data.user.avatarUrl;
             this.loginUser = user;
+            this.bioUser = response.data.data.user.bio;
+            this.followingUser = response.data.data.user.following.totalCount;
+            this.followersUser = response.data.data.user.followers.totalCount;
             this.showTable = true;
             this.errorMessage = "";
           } else {
@@ -192,17 +181,90 @@ export default {
 </script>
 
 <style scoped>
-.avatar {
-  width: 200px;
-  height: 200px;
+.title-search {
+  justify-content: center;
 }
-.repo {
-  width: 100%;
-  height: 300px;
+#main {
+  background-color: #2a2a72;
+  background-image: linear-gradient(315deg, #2a2a72 0%, #2e2a68 74%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   margin: 0;
+  min-height: 100vh;
+}
+.card {
+  background-color: #4c2885;
+  background-image: linear-gradient(315deg, #4c2885 0%, #4c11ac 100%);
+  border-radius: 20px;
+  box-shadow: 0 5px 10px rgba(154, 160, 185, 0.05),
+    0 15px 40px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  max-width: 800px;
+}
+.card h1,
+p {
+  padding: 1rem;
+  text-align: center;
+}
+.main-card {
+  display: flex;
+  flex-direction: row;
+}
+
+.avatar {
+  border: 10px solid #2a2a72;
+  border-radius: 25%;
+  height: 150px;
+  width: 150px;
+}
+
+.user-info {
+  color: #eee;
+  margin-left: 2rem;
+}
+
+.user-info h2 {
+  margin-top: 0;
+}
+
+.user-info ul {
+  display: flex;
+  justify-content: space-between;
+  list-style-type: none;
   padding: 0;
-  background-color: #fff;
-  position: absolute;
-  top: 50%;
+  max-width: 400px;
+}
+
+.user-info ul li {
+  display: flex;
+  align-items: center;
+  margin-left: 0.5rem;
+}
+
+.user-info ul li strong {
+  font-size: 1rem;
+  margin-left: 0.5rem;
+}
+
+#repos {
+  background-color: #2a2a72;
+  border-radius: 5px;
+  display: inline-block;
+  color: white;
+  font-size: 0.7rem;
+  padding: 1rem;
+  margin: 0.5rem;
+  cursor: pointer;
+}
+#repos ul {
+  list-style-type: none;
+}
+#repos ul li a {
+  text-decoration: none;
+  color: white;
 }
 </style>

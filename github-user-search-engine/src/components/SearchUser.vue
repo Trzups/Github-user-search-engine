@@ -1,7 +1,7 @@
 <template>
   <div>
     <form @submit.prevent="onSubmit()">
-      <div>
+      <div class="search">
         <SimpleTypeahead
           ref="search"
           id="typeahead_id"
@@ -14,17 +14,15 @@
             (item) => {
               return item.login;
             }
-          "
-        >
+          ">
           <template #list-item-text="slot">
             <span
-              v-html="slot.boldMatchText(slot.itemProjection(slot.item))"
-            ></span
+              v-html="slot.boldMatchText(slot.itemProjection(slot.item))"></span
           ></template>
         </SimpleTypeahead>
         <br />
         <div>
-          <button type="submite" class="btn btn-primary">Search</button>
+          <button type="submite" class="search-button">Search</button>
         </div>
         <br />
         <div v-if="errorMessage">
@@ -48,7 +46,7 @@ export default {
   data() {
     return {
       options: {
-        placeholder: "Enter username",
+        placeholder: "Search a Github user",
         minInputLength: 1,
       },
       data: {
@@ -92,3 +90,52 @@ export default {
   },
 };
 </script>
+<style>
+input {
+  background-color: #4c2885;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 5px 10px rgba(154, 160, 185, 0.05),
+    0 15px 40px rgba(0, 0, 0, 0.1);
+  color: white;
+  font-size: 1rem;
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+input::placeholder {
+  color: #bbb;
+}
+
+input:focus {
+  outline: none;
+}
+.search {
+  display: flex;
+}
+.search-button {
+  color: red;
+  border-radius: 10px;
+  border: none;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  font-family: inherit;
+}
+#typeahead_id {
+  color: white;
+  width: 400px;
+  margin-right: 20px;
+}
+.simple-typeahead-list-item {
+  color: black;
+}
+
+.simple-typeahead-list-item.simple-typeahead-list-item-active {
+  background-color: red;
+}
+.simple-typeahead
+  .simple-typeahead-list
+  .simple-typeahead-list-item.simple-typeahead-list-item-active {
+  background-color: aqua;
+}
+</style>
