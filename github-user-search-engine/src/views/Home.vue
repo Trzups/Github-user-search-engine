@@ -27,11 +27,21 @@
             </div>
           </div>
           <h1>Repositories</h1>
-          <div id="repos">
-            <ul v-for="item in paginatedItems" :key="item">
-              <li>
-                <strong></strong><a :href="item.url">{{ item.name }}</a>
-              </li>
+          <div id="repos" v-for="item in paginatedItems" :key="item">
+            <div class="my-card">
+              <div class="name-repo">
+                <a :href="item.url">{{ item.name }}</a>
+              </div>
+              <div class="stats-repo">
+                <ul>
+                  <li>Pull Requests: {{ item.pullRequests.totalCount }}</li>
+                  <li>Stars: {{ item.stargazerCount }}</li>
+                  <li>Watching: {{ item.watchers.totalCount }}</li>
+                </ul>
+              </div>
+            </div>
+            <ul>
+              <li></li>
             </ul>
           </div>
           <div class="overflow-auto">
@@ -184,6 +194,9 @@ export default {
 .title-search {
   justify-content: center;
 }
+.title {
+  text-align: center;
+}
 #main {
   background-color: #2a2a72;
   background-image: linear-gradient(315deg, #2a2a72 0%, #2e2a68 74%);
@@ -203,7 +216,7 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 1rem;
-  max-width: 800px;
+  max-width: 1000px;
 }
 .card h1,
 p {
@@ -251,13 +264,13 @@ p {
 }
 
 #repos {
-  background-color: #2a2a72;
+  background-color: #221a32;
   border-radius: 5px;
   display: inline-block;
   color: white;
   font-size: 0.7rem;
   padding: 1rem;
-  margin: 0.5rem;
+  margin: 0.3rem;
   cursor: pointer;
 }
 #repos ul {
@@ -266,5 +279,26 @@ p {
 #repos ul li a {
   text-decoration: none;
   color: white;
+}
+.name-repo {
+  text-align: center;
+  font-size: 1.2rem;
+  margin: 5px;
+}
+ a {
+  text-decoration: none;
+  color: white;
+}
+.stats-repo ul {
+  display: flex;
+  justify-content: space-between;
+  list-style-type: none;
+  padding: 0;
+  max-width: 400px;
+}
+.stats-repo ul li {
+  display: flex;
+  align-items: center;
+  margin-left: 0.5rem;
 }
 </style>
